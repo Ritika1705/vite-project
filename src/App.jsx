@@ -3,8 +3,7 @@ import axios from 'axios';
 import prettyBytes from 'pretty-bytes';
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOMServer from 'react-dom/server'
-import HTMLReactParser from 'html-react-parser';
-import { Sayhello } from './datakeycomponent';
+import Datakeycomponent from './Datakeycomponent'
 
 function App() {
 
@@ -22,10 +21,11 @@ function App() {
 
   const [resp, setResp] = useState();
 
+  
 
   useEffect(() => {
-    queryParamsContainer.current.append(createKeyValuePair())
-    requestHeadersContainer.current.append(createKeyValuePair())
+    //queryParamsContainer.current.append(createKeyValuePair())
+    //requestHeadersContainer.current.append(createKeyValuePair())
 
 
     axios.interceptors.request.use(request => {
@@ -63,47 +63,20 @@ function App() {
         console.log(response)
         updateResponseDetails(response)
         setResp(response.data);
+        console.log(response.headers);
         updateresponseHeaders(response.headers)
         
     })
   }
 
-  function Datakeycomponent()
-  {
-      const handleClick = (evt) => {
-        console.log('handle clicked');
-      }
-    
-      return(
-      <>
-        <div className="input-group my-2 data_key_value_pair">
-                <input type="text" ref={data_key}  className="form-control" placeholder="Key" />
-                <input type="text" ref={data_value} className="form-control" placeholder="Value"  />
-                <button type="button" className="btn btn-outline-danger data_remove_btn" onClick={this.handleClick}>Remove</button>
-        </div>
-      </>
-    )
-  }
 
-  function removerecord(obj)
-  {
+  // function createKeyValuePair()
+  // {
+  //     const ele = queryParamsContainer.current;     
+  //     //ele.appendChild(<Datakeycomponent/>);
 
-    var buttons = document.getElementsByClassName('data_remove_btn');
-    console.log(buttons.length);
-    
-  }
-
-  function createKeyValuePair()
-  {
-      const htmlString = ReactDOMServer.renderToString(<Datakeycomponent />)
-      var htmlObject = document.createElement('div');
-      htmlObject.classList.add("key_value_pair");
-      htmlObject.innerHTML = htmlString;
-      //console.log(htmlObject);
-      removerecord(htmlObject);      
-
-      return htmlObject
-  }
+  //     //return <Datakeycomponent/>
+  // }
 
   function keyValuePairstoObject(container)
   {
@@ -147,33 +120,35 @@ function App() {
   function updateresponseHeaders(headers)
   { 
       responseHeadersContainers.innerHTML = "";
+      console.log(Object.entries(headers));
       Object.entries(headers).forEach(([key,value]) => {
           const keyElement = document.createElement("div");
           keyElement.textContent = key
-          requestHeadersContainer.current.append(keyElement)
+          console.log(responseHeadersContainers.current);
+          responseHeadersContainers.current.append(keyElement)
 
           const valueElement = document.createElement("div");
           valueElement.textContent = value
-          requestHeadersContainer.current.append(valueElement)
+          responseHeadersContainers.current.append(valueElement)
       })
   }
   // document.getElementById('data-add-query-param-btn').addEventListener("click", ()=>{
   //     queryParamsContainer.append(createKeyValuePair())
   // })
 
-  const queryappend = (e) =>{
-    e.preventDefault();
-    queryParamsContainer.current.append(createKeyValuePair());
-  }
+  // const queryappend = (e) =>{
+  //   e.preventDefault();
+  //   //queryParamsContainer.current.append(createKeyValuePair());
+  // }
 
-  // document.getElementById('data-add-request-headers-btn').addEventListener("click", ()=>{
-  //     requestHeadersContainer.append(createKeyValuePair())
-  // })
+  // // document.getElementById('data-add-request-headers-btn').addEventListener("click", ()=>{
+  // //     requestHeadersContainer.append(createKeyValuePair())
+  // // })
 
-  const requestheaderappend = (e) => {
-    e.preventDefault();
-    requestHeadersContainer.current.append(createKeyValuePair());
-  }
+  // const requestheaderappend = (e) => {
+  //   e.preventDefault();
+  //   requestHeadersContainer.current.append(createKeyValuePair());
+  // }
 
   return (
     <>
@@ -205,12 +180,14 @@ function App() {
                 </ul>
                 <div className="tab-content p-3 border-top-0 border">
                       <div className="tab-pane fade show active" id="query-params" role="tabpanel" aria-labelledby="query-params-tab">
-                          <div ref={queryParamsContainer}></div>
-                          <button id="data-add-query-param-btn" onClick={queryappend} className="mt-2 btn btn-outline-success" type="button">Add</button>
+                          <div ref={queryParamsContainer}>
+                            <Datakeycomponent/>
+                          </div>
                       </div> 
                       <div className="tab-pane fade" id="request-headers" role="tabpanel" aria-labelledby="request-headers-tab">
-                          <div ref={requestHeadersContainer}></div>
-                          <button id="data-add-request-headers-btn" onClick={requestheaderappend} className="mt-2 btn btn-outline-success" type="button">Add</button>
+                          <div id="data-request-headers" ref={requestHeadersContainer}> 
+                            <Datakeycomponent/>
+                          </div>  
                       </div>
                       <div className="tab-pane fade show" id="json" role="tabpanel" aria-labelledby="json-tab">
                           <div id="data-json-request-body" className="overflow-auto" style={{maxHeight: '200px'}}></div>
@@ -245,7 +222,7 @@ function App() {
                         <div id="data-json-response-body" className="overflow-auto" style={{maxHeight: '200px'}}><pre>{JSON.stringify(resp, null, 2)}</pre></div>
                     </div> 
                     <div className="tab-pane fade" id="response-headers" role="tabpanel" aria-labelledby="response-headers-tab">
-                        <div style={{display:'grid', gridTemplateColumns:'auto 1fr', gap: '5rem 2rem'}} ref={responseHeadersContainers}></div>
+                        <div style={{display:'grid', gridTemplateColumns:'auto 1fr', gap: '2rem 2rem'}} ref={responseHeadersContainers}></div>
                     </div>
                 </div>
             </div>
